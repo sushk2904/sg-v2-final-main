@@ -71,7 +71,32 @@ export default function NewCandidatePage() {
 
   const submitCandidate = async (dataToSubmit: typeof formData) => {
     setIsLoading(true);
+
+    // Simple client-side skill extraction if no parsed data available
+    const extractSkills = (text: string) => {
+      const skills = [
+        "Python", "JavaScript", "TypeScript", "React", "Node.js", "Java",
+        "C++", "Go", "Rust", "SQL", "PostgreSQL", "MongoDB", "AWS",
+        "Docker", "Kubernetes", "FastAPI", "Next.js", "Tailwind CSS"
+      ];
+      return skills.filter(skill =>
+        text.toLowerCase().includes(skill.toLowerCase())
+      );
+    };
+
     try {
+      // Build resume_parsed if text exists
+      let resumeParsed = null;
+      if (dataToSubmit.resume_text) {
+        resumeParsed = {
+          summary: dataToSubmit.resume_text.slice(0, 500) + "...",
+          skills: extractSkills(dataToSubmit.resume_text),
+          work_history: [], // Would require more complex parsing
+          education: [],
+          experience_years: 0
+        };
+      }
+
       const response = await fetch("/api/candidates/", {
         method: "POST",
         headers: {
@@ -83,6 +108,8 @@ export default function NewCandidatePage() {
           github_username: dataToSubmit.github_username || null,
           leetcode_username: dataToSubmit.leetcode_username || null,
           role_id: dataToSubmit.role_id,
+          resume_text: dataToSubmit.resume_text || null,
+          resume_parsed: resumeParsed
         }),
       });
 

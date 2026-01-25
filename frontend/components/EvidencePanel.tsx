@@ -84,18 +84,18 @@ export function EvidencePanel({
                         onOpenChange={() => toggleSection('resume')}
                     >
                         <CollapsibleTrigger className="w-full">
-                            <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent transition-colors">
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-slate-900/30 hover:border-blue-500/30 hover:bg-blue-500/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-300 group">
                                 <div className="flex items-center gap-3">
-                                    <FileText className="w-5 h-5 text-muted-foreground" />
+                                    <FileText className="w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors" />
                                     <div className="text-left">
-                                        <p className="font-medium text-sm">Resume</p>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="font-medium text-sm text-slate-200 group-hover:text-blue-200">Resume</p>
+                                        <p className="text-xs text-slate-500 group-hover:text-slate-400">
                                             {resume.skills.length} skills, {resume.experience_years} years experience
                                         </p>
                                     </div>
                                 </div>
                                 <ChevronDown
-                                    className={`w-4 h-4 transition-transform ${openSections.resume ? 'rotate-180' : ''}`}
+                                    className={`w-4 h-4 text-slate-500 transition-transform ${openSections.resume ? 'rotate-180' : ''}`}
                                 />
                             </div>
                         </CollapsibleTrigger>
@@ -152,21 +152,21 @@ export function EvidencePanel({
                         onOpenChange={() => toggleSection('github')}
                     >
                         <CollapsibleTrigger className="w-full">
-                            <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent transition-colors">
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-slate-900/30 hover:border-blue-500/30 hover:bg-blue-500/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-300 group">
                                 <div className="flex items-center gap-3">
-                                    <Github className="w-5 h-5 text-muted-foreground" />
+                                    <Github className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors" />
                                     <div className="text-left">
-                                        <p className="font-medium text-sm flex items-center gap-2">
+                                        <p className="font-medium text-sm text-slate-200 group-hover:text-blue-200 flex items-center gap-2">
                                             GitHub Activity
-                                            <ExternalLink className="w-3 h-3" />
+                                            <ExternalLink className="w-3 h-3 opacity-50" />
                                         </p>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-xs text-slate-500 group-hover:text-slate-400">
                                             {githubData.total_repos} repos, {githubData.total_commits_last_year} commits (12mo)
                                         </p>
                                     </div>
                                 </div>
                                 <ChevronDown
-                                    className={`w-4 h-4 transition-transform ${openSections.github ? 'rotate-180' : ''}`}
+                                    className={`w-4 h-4 text-slate-500 transition-transform ${openSections.github ? 'rotate-180' : ''}`}
                                 />
                             </div>
                         </CollapsibleTrigger>
@@ -243,18 +243,18 @@ export function EvidencePanel({
                         onOpenChange={() => toggleSection('leetcode')}
                     >
                         <CollapsibleTrigger className="w-full">
-                            <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent transition-colors">
+                            <div className="flex items-center justify-between p-3 rounded-lg border border-white/5 bg-slate-900/30 hover:border-blue-500/30 hover:bg-blue-500/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-300 group">
                                 <div className="flex items-center gap-3">
-                                    <Code2 className="w-5 h-5 text-muted-foreground" />
+                                    <Code2 className="w-5 h-5 text-amber-500 group-hover:text-amber-400 transition-colors" />
                                     <div className="text-left">
-                                        <p className="font-medium text-sm">LeetCode</p>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="font-medium text-sm text-slate-200 group-hover:text-blue-200">LeetCode</p>
+                                        <p className="text-xs text-slate-500 group-hover:text-slate-400">
                                             {leetcodeData.total_solved} problems solved
                                         </p>
                                     </div>
                                 </div>
                                 <ChevronDown
-                                    className={`w-4 h-4 transition-transform ${openSections.leetcode ? 'rotate-180' : ''}`}
+                                    className={`w-4 h-4 text-slate-500 transition-transform ${openSections.leetcode ? 'rotate-180' : ''}`}
                                 />
                             </div>
                         </CollapsibleTrigger>

@@ -143,6 +143,16 @@ def calculate_alignment(candidate_prefs: Dict[str, float], target_prefs: Dict[st
             "decision_autonomy": 0.75
         }
     
+    # Check if candidate has provided any preferences
+    if not candidate_prefs:
+        return {
+            "dimensions": [],
+            "overall": 0.35,
+            "category": "low",
+            "key_strengths": ["Insufficient data"],
+            "potential_gaps": ["No work preference data available"]
+        }
+    
     # Calculate alignment for each dimension
     dimensions = []
     for key in target_prefs:

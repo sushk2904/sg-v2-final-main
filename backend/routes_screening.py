@@ -81,9 +81,15 @@ async def get_session(token: str, db: Session = Depends(get_db)):
         
     if session.status == "completed" or session.status == "evaluated":
         raise HTTPException(status_code=400, detail="Session already completed")
-        
+
+    # Fetch candidate name
+    candidate_name = "Candidate"
+    candidate = db.query(Candidate).filter(Candidate.id == session.candidate_id).first()
+    if candidate:
+        candidate_name = candidate.full_name
+
     return {
-        "candidate_name": session.candidate_id, # Simplified, typically we fetch name
+        "candidate_name": candidate_name,
         "questions": [
             {"id": q.id, "text": q.text, "category": q.category}
             for q in session.questions

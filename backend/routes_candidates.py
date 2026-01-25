@@ -56,6 +56,8 @@ async def create_candidate(
     github_username: Optional[str] = Body(None),
     leetcode_username: Optional[str] = Body(None),
     role_id: Optional[str] = Body(None),
+    resume_text: Optional[str] = Body(None),
+    resume_parsed: Optional[dict] = Body(None),
     db: Session = Depends(get_db)
 ):
     """Create a new candidate and optionally analyze their GitHub/LeetCode profile."""
@@ -69,6 +71,7 @@ async def create_candidate(
         if role_id: candidate.role_id = role_id
         if github_username: candidate.github_username = github_username
         if leetcode_username: candidate.leetcode_username = leetcode_username
+        if resume_parsed: candidate.resume_parsed = resume_parsed
     else:
         candidate = Candidate(
             id=str(uuid.uuid4()),
@@ -77,7 +80,8 @@ async def create_candidate(
             github_username=github_username,
             leetcode_username=leetcode_username,
             role_id=role_id,
-            status="pending_intake"
+            status="pending_intake",
+            resume_parsed=resume_parsed
         )
         db.add(candidate)
     
@@ -120,6 +124,30 @@ async def create_candidate(
             explanations=cri_data["explanations"]
         )
         db.add(cri_score)
+
+        # Calculate Alignment Score
+        alignment_data = calculate_alignment(candidate.work_preferences or {})
+        
+        # Remove old alignment scores
+        db.query(AlignmentScore).filter(AlignmentScore.candidate_id == candidate.id).delete()
+        
+        alignment_score = AlignmentScore(
+            id=str(uuid.uuid4()),
+            candidate_id=candidate.id,
+            overall_alignment=alignment_data["overall"],
+            alignment_category=alignment_data["category"],
+            key_strengths=alignment_data["key_strengths"],
+            potential_gaps=alignment_data["potential_gaps"],
+            role_alignment={
+                "overall": alignment_data["overall"],
+                "dimensions": alignment_data["dimensions"]
+            },
+            org_alignment={
+                "overall": 0,
+                "dimensions": []
+            } 
+        )
+        db.add(alignment_score)
     
     db.add(candidate)
     db.commit()
@@ -263,6 +291,31 @@ async def analyze_candidate_github(candidate_id: str, db: Session = Depends(get_
     )
     
     db.add(cri_score)
+
+    # Calculate Alignment Score
+    alignment_data = calculate_alignment(candidate.work_preferences or {})
+    
+    # Remove old alignment scores
+    db.query(AlignmentScore).filter(AlignmentScore.candidate_id == candidate_id).delete()
+    
+    alignment_score = AlignmentScore(
+        id=str(uuid.uuid4()),
+        candidate_id=candidate.id,
+        overall_alignment=alignment_data["overall"],
+        alignment_category=alignment_data["category"],
+        key_strengths=alignment_data["key_strengths"],
+        potential_gaps=alignment_data["potential_gaps"],
+        role_alignment={
+            "overall": alignment_data["overall"],
+            "dimensions": alignment_data["dimensions"]
+        },
+        org_alignment={
+            "overall": 0,
+            "dimensions": []
+        } 
+    )
+    db.add(alignment_score)
+    
     db.commit()
     db.refresh(candidate)
     db.refresh(cri_score)
@@ -322,6 +375,31 @@ async def analyze_candidate_leetcode(candidate_id: str, db: Session = Depends(ge
     )
     
     db.add(cri_score)
+
+    # Calculate Alignment Score
+    alignment_data = calculate_alignment(candidate.work_preferences or {})
+    
+    # Remove old alignment scores
+    db.query(AlignmentScore).filter(AlignmentScore.candidate_id == candidate_id).delete()
+    
+    alignment_score = AlignmentScore(
+        id=str(uuid.uuid4()),
+        candidate_id=candidate.id,
+        overall_alignment=alignment_data["overall"],
+        alignment_category=alignment_data["category"],
+        key_strengths=alignment_data["key_strengths"],
+        potential_gaps=alignment_data["potential_gaps"],
+        role_alignment={
+            "overall": alignment_data["overall"],
+            "dimensions": alignment_data["dimensions"]
+        },
+        org_alignment={
+            "overall": 0,
+            "dimensions": []
+        } 
+    )
+    db.add(alignment_score)
+    
     db.commit()
     db.refresh(candidate)
     
@@ -346,7 +424,20 @@ async def list_candidates(skip: int = 0, limit: int = 10, db: Session = Depends(
                 "full_name": c.full_name,
                 "status": c.status,
                 "github_username": c.github_username,
-                "created_at": c.created_at.isoformat() if c.created_at else None
+                "created_at": c.created_at.isoformat() if c.created_at else None,
+                "cri_scores": [
+                    {
+                        "overall_cri": s.overall_cri,
+                        "confidence_level": s.confidence_level,
+                        "readiness_trend": s.readiness_trend
+                    } for s in c.cri_scores
+                ],
+                "alignment_scores": [
+                    {
+                        "overall_alignment": a.overall_alignment,
+                        "alignment_category": a.alignment_category
+                    } for a in c.alignment_scores
+                ]
             }
             for c in candidates
         ],

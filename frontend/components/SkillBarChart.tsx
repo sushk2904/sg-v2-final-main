@@ -18,6 +18,8 @@ import {
     ResponsiveContainer,
     Cell,
     Tooltip as RechartsTooltip,
+    ComposedChart,
+    Line
 } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
@@ -133,39 +135,70 @@ export function SkillBarChart({
             <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
+                        <ComposedChart
                             data={chartData}
                             layout="vertical"
                             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" className="stroke-border" horizontal={false} />
+                            <defs>
+                                <linearGradient id="gradientHigh" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.9} />
+                                    <stop offset="100%" stopColor="#22d3ee" stopOpacity={1} />
+                                </linearGradient>
+                                <linearGradient id="gradientMedium" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                    <stop offset="100%" stopColor="#60a5fa" stopOpacity={1} />
+                                </linearGradient>
+                                <linearGradient id="gradientLow" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.8} />
+                                    <stop offset="100%" stopColor="#fbbf24" stopOpacity={1} />
+                                </linearGradient>
+                                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="2" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" className="stroke-white/10" horizontal={false} />
                             <XAxis
                                 type="number"
                                 domain={[0, 100]}
                                 tickFormatter={(value) => `${value}%`}
-                                className="text-xs"
+                                className="text-xs fill-slate-400"
+                                axisLine={false}
+                                tickLine={false}
                             />
                             <YAxis
                                 type="category"
                                 dataKey="name"
                                 width={150}
-                                className="text-xs"
+                                className="text-xs fill-slate-300 font-medium"
+                                axisLine={false}
+                                tickLine={false}
                             />
                             <RechartsTooltip
+                                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                                 content={({ active, payload }) => {
                                     if (active && payload && payload.length) {
                                         const data = payload[0].payload;
                                         return (
-                                            <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                            <div className="rounded-lg border border-white/10 bg-slate-900/90 backdrop-blur-md p-3 shadow-xl">
                                                 <div className="flex flex-col gap-1">
-                                                    <span className="text-sm font-semibold">{data.name}</span>
-                                                    <span className="text-sm">{data.value}%</span>
-                                                    <span className="text-xs text-muted-foreground">
+                                                    <span className="text-sm font-semibold text-white">{data.name}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-lg font-bold text-blue-400">{data.value}%</span>
+                                                        <span className="text-xs text-slate-400">Score</span>
+                                                    </div>
+                                                    <span className="text-xs text-slate-400 max-w-[200px] leading-tight">
                                                         {SKILL_DESCRIPTIONS[data.key as keyof typeof SKILL_DESCRIPTIONS]}
                                                     </span>
-                                                    <span className="text-xs text-muted-foreground mt-1">
-                                                        Confidence: {Math.round(data.confidence * 100)}%
-                                                    </span>
+                                                    <div className="flex items-center gap-1 mt-1">
+                                                        <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                                                            <div className="h-full bg-blue-500" style={{ width: `${Math.round(data.confidence * 100)}%` }} />
+                                                        </div>
+                                                        <span className="text-xs text-slate-500 whitespace-nowrap">
+                                                            Conf: {Math.round(data.confidence * 100)}%
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
@@ -173,12 +206,26 @@ export function SkillBarChart({
                                     return null;
                                 }}
                             />
-                            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                                {chartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={getBarColor(entry.value)} />
-                                ))}
+                            <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={32}>
+                                {chartData.map((entry, index) => {
+                                    let fillUrl = "url(#gradientLow)";
+                                    if (entry.value >= 75) fillUrl = "url(#gradientHigh)";
+                                    else if (entry.value >= 50) fillUrl = "url(#gradientMedium)";
+                                    return (
+                                        <Cell key={`cell-${index}`} fill={fillUrl} strokeWidth={0} />
+                                    );
+                                })}
                             </Bar>
-                        </BarChart>
+                            <Line
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#ffffff"
+                                strokeWidth={2}
+                                dot={{ fill: '#ffffff', r: 4 }}
+                                activeDot={{ r: 6, strokeWidth: 0 }}
+                                strokeOpacity={0.5}
+                            />
+                        </ComposedChart>
                     </ResponsiveContainer>
                 </ChartContainer>
 

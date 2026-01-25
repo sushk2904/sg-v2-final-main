@@ -69,9 +69,9 @@ export function AlignmentHeatmap({
     }
 
     const getAlignmentColor = (score: number): string => {
-        if (score >= 0.75) return 'bg-green-500/20 border-green-500/50 text-green-700 dark:text-green-300';
-        if (score >= 0.45) return 'bg-yellow-500/20 border-yellow-500/50 text-yellow-700 dark:text-yellow-300';
-        return 'bg-orange-500/20 border-orange-500/50 text-orange-700 dark:text-orange-300';
+        if (score >= 0.75) return 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400 font-bold shadow-[0_0_10px_rgba(34,211,238,0.2)]';
+        if (score >= 0.45) return 'bg-blue-500/10 border-blue-500/50 text-blue-400 font-medium';
+        return 'bg-amber-500/10 border-amber-500/50 text-amber-500';
     };
 
     const getAlignmentLabel = (score: number): string => {
