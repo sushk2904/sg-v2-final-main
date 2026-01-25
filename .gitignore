@@ -1,0 +1,21 @@
+# General
+.DS_Store
+Thumbs.db
+node_modules/
+.env
+.env.local
+.venv/
+
+# IDE directories
+.vscode/
+.idea/
+
+# Backend artifacts
+backend/__pycache__/
+backend/*.db
+backend/*.log
+
+# Frontend artifacts
+frontend/.next/
+frontend/out/
+frontend/build/
